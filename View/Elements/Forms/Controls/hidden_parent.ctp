@@ -1,0 +1,1 @@
+<input type="hidden" name="data[<?php echo $model;?>][<?php echo $ctrl_field['field'];?>]" value="<?php echo $habtm[$ctrl_field['model']][$ctrl_field['value']]; ?>">

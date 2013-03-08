@@ -1,0 +1,96 @@
+<?php
+App::uses('AppController', 'Controller');
+/**
+ * Permissoes Controller
+ *
+ */
+class PermissoesController extends AppController {
+
+	public function _variables($header = null) {
+		$this->set('header',$header);
+		$this->set('model','Permissao');
+		$this->set('controller', 'permissoes');
+		$this->set('del_info', 'action');
+		
+		$belongsTo = array();
+		$belongsTo['NiveisAcesso'] = $this->Permissao->NiveisAcesso->find('list', array('conditions'=>array('NiveisAcesso.nome <>'=>'Administrador'),'fields'=>array('id','nome')));
+		
+		$clist = $this->ControllerList->get();
+		$valid_clist = array();
+		$act_controller = '';
+		foreach($clist as $k => $v) {
+			$valid_clist[$k] = array();
+			foreach($v as $ak=>$av) {
+				$valid_clist[$k][$k.'::'.$av] = $k.'::'.$av;
+			}
+		}
+		//pr($valid_clist);
+		$belongsTo['Actions'] = $valid_clist;
+			
+		$this->set('belongsTo', $belongsTo);
+		
+		$forms = array(
+			'fields' => array(
+				array(
+					'field'=>'nome',
+					'model'=>'NiveisAcesso',
+					'name'=>'Nível de Acesso',
+					'type'=>'belongsTo',
+					'data'=>$belongsTo['NiveisAcesso']
+				),
+				array(
+					'field'=>'action',
+					'name'=>'Action',
+					'type'=>'belongsTo',
+					'data'=>$belongsTo['Actions']
+				)
+			)
+		);
+		
+		$this->set('forms',$forms);
+	}
+	
+	public function save(){
+		if ($this->Permissao->save($this->data)):
+			$this->Session->setFlash(__('Permissao gravado com sucesso!', true), 'bootstrap_flash', array('class'=>'alert-success'));
+			$this->redirect('index');
+		else:
+			$this->Session->setFlash(__('Permissao não pode ser gravado!', true), 'bootstrap_flash', array('class'=>'alert-error'));
+			$this->set('invalidFields', $this->Permissao->invalidFields());
+		endif;
+	}
+
+	public function index() {
+		$this->set('data_index', $this->Permissao->find('all'));
+		$this->_variables('Permissoes');
+	}
+	
+	public function add() {
+		if ($this->request->isPost()):
+			$this->save();
+		endif;
+		$this->_variables('Adiciona Permissao');
+	}
+	
+	public function edit($id = null) {
+		if ($this->request->isPost()):
+			$this->save();
+		else:
+			$this->data = $this->Permissao->read(null, $id);
+			$this->_variables('Edita Permissao');
+		endif;
+	}
+	
+	public function del($id = null) {
+		if ($this->request->isPost()):
+			$this->layout = null;
+			
+			if ($this->Permissao->delete($this->data['Permissao']['id'])) {
+				$this->Session->setFlash(__('Permissao excluído com sucesso!',true), 'bootstrap_flash', array('class'=>'alert-success'));
+			} else {
+				$this->Session->setFlash(__('Permissao não pôde ser excluído!',true), 'bootstrap_flash', array('class'=>'alert-error'));
+			}
+			$this->redirect('index');
+		endif;
+	}
+}
