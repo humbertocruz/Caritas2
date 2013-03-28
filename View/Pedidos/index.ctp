@@ -1,7 +1,6 @@
 <div class="page-header clearfix">
 	<h2><?php echo $header; ?></h2>
 </div>
-
 <form method="post" class="form-inline">
 <div class="row">
 	<div class="span12">
@@ -64,9 +63,10 @@ if (isset($this->Paginator) ) {
 		<tr class="alert-info">
 			<th><?php echo $this->Paginator->sort( 'Instituicao.InstituicoesEndereco.Cidade.id', 'UF' ); ?></th>
 			<th><?php echo $this->Paginator->sort( 'Instituicao.razaosocial', 'Instituição' ); ?></th>
+			<th>Edital</th>
+			<th>Convênio</th>
 			<th><?php echo $this->Paginator->sort( 'TiposPagamento.nome', 'Forma de Pagamento' ); ?></th>
 			<th>Valor Total</th>
-			<th><?php echo $this->Paginator->sort(' Distrituidor.nome', 'Distribuidor' ); ?></th>
 			<th>Qtd. Itens</th>
 			<th>Qtd. Chamadas</th>
 			<th>&nbsp;</th>
@@ -74,7 +74,7 @@ if (isset($this->Paginator) ) {
 	</thead>
 	<tbody>
 	<?php
-	 foreach ($data_index as $row) {  
+	 foreach ($data_index as $row) {
 		 $valor_pedido = 0;
 		 foreach($row['PedidosItem'] as $item) {
 			 $valor_pedido+=$item['Item']['valor'];
@@ -83,12 +83,14 @@ if (isset($this->Paginator) ) {
 		<tr>
 			<td><?php echo $row['Instituicao']['InstituicoesEndereco'][0]['Cidade']['estado_id']; ?></td>
 			<td><?php echo $row['Instituicao']['razao_social']; ?></td>
+			<td><?php echo $row['Edital']['numero'];?></td>
+			<td><?php echo $row['Convenio']['num_convenio'];?></td>
 			<td><?php echo $row['TiposPagamento']['nome']; ?></td>
 			<td style="text-align: right;"><?php echo number_format($valor_pedido, 2, ',','.'); ?></td>
-			<td><?php echo $row['Distribuidor']['nome']; ?></td>
 			<td><?php echo count( $row['PedidosItem'] ); ?></td>
 			<td><?php echo count( $row['Chamada'] ); ?></td>
 			<td>
+				<a href="#detModal" data-id="<?php echo $row['Pedido']['id'];?>" class="btn detBtn" rel="tooltip" title="Detalhes"><i class="icon-eye-open"></i></a>
 				<a href="/<?php echo $controller;?>/edit/<?php echo $row[$model]['id'];?>" class="btn" rel="tooltip" title="Editar"><i class="icon-pencil"></i></a>
 				<a href="#delModal" data-del-info="<?php echo $row['Instituicao']['razao_social']; ?>" data-id="<?php echo $row['Pedido']['id']; ?>" data-toggle="modal" class="btn delBtn" rel="tooltip" title="Excluir"><i class="icon-trash"></i></a>
 			</td>
@@ -122,8 +124,29 @@ if (isset($this->Paginator) ) {
 		</form>
 	</div>
 </div>
+<div class="modal fade hide span10" id="detModal" style="margin-left: -510px;">
+	<div class="modal-header">
+		<a href="#" class="close" data-dismiss="modal">x</a>
+		<h3>Detalhes do Pedido</h3>
+	</div>
+	<div class="modal-body">
+	
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+	</div>
+</div>
 <script>
 $(document).ready(function(){
+	$('.detBtn').click(function(){
+		$.ajax({
+			url: '/pedidos/view/'+$(this).data('id'),
+			success: function(data){
+				$('#detModal .modal-body').html(data);
+				$('#detModal').modal('show');
+			}
+		});
+	});
 	$(':input[rel=date]').datepicker();
 	$('.delBtn').click(function(){
 		$('#modal-id').val($(this).data('id'));

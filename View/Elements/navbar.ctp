@@ -27,6 +27,13 @@ $sess_models = AppController::_sess_models();
 			<?php } ?>
 			<?php if (AppController::_isAdmin()) { ?>
 			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">Segurança<b class="caret"></b></a>
+				<ul class="dropdown-menu">
+					<li><?php echo $this->Html->link('Backup Banco de Dados','/backups');?></li>
+					<li><?php echo $this->Html->link('Log de Acesso','/logs');?></li>
+				</ul>
+			</li>
+			<li class="dropdown">
 				<a class="dropdown-toggle" data-toggle="dropdown" href="#">Controle de Acesso<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><?php echo $this->Html->link('Atendentes','/atendentes');?></li>

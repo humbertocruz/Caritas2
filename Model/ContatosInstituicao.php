@@ -117,6 +117,15 @@ class ContatosInstituicao extends AppModel {
 		)
 	);
 	
+	public $hasMany = array(
+		'InstituicoesEmail' => array(
+			'foreignKey' => 'instituicao_id'
+		),
+		'InstituicoesFone' => array(
+			'foreignKey' => 'instituicao_id'
+		)
+	);
+	
 	public function beforeSave() {
 		if (!empty( $this->data['ContatosInstituicao']['data_inicio'] ) ) {
 			$data = split('/', $this->data['ContatosInstituicao']['data_inicio']);

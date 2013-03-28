@@ -31,7 +31,29 @@ $sess_models = AppController::_sess_models();
 			<?php echo $this->Element('Forms/BSControls/instituicaoSessUFCidade'); ?>
 			<?php echo $this->Element('Forms/BSControls/fornecedorSessUFCidade'); ?>
 			<?php // Campo especial para Contato da Chamada ?>
-			<?php echo $this->Element('Chamadas/tabContato'); ?>
+			<div class="control-group alert" id="ctrl-contato_id">
+				<label class="control-label" for="fld_contato_id">Contato</label>
+				<div class="controls">
+					<select class="span4 opt-contato" id="fld_contato_id" name="data[Chamada][contato_id]">
+						<optgroup label="Selecione a Instituição / Fornecedor"></optgroup>
+					</select>
+					<table class="table table-bordered">
+							<tr>
+								<th>Cargo</th>
+								<th>Status</th>
+								<th>Telefone</th>
+								<th>Email</th>
+							</tr>
+					</table>
+					<textarea onclick="$(this).select();" rows="4" readonly="readonly" class="span4" id="fld_contato_fones"></textarea>
+					<textarea onclick="$(this).select();" rows="4" readonly="readonly" class="span4" id="fld_contato_emails"></textarea>
+					<br>
+					<button type="button" id="btn-edita-contato" data-id-chamada="0" class="btn"><i class="icon-pencil"></i> Editar Contato</button>
+					<button type="button" class="btn" data-toggle="modal" data-target="#modal-novo-contato"><i class="icon-plus-sign"></i> Contato</button>
+					<button type="button" class="btn" data-toggle="modal" data-target="#modal-novo-telefone"><i class="icon-plus-sign"></i> Telefone</button>
+					<button type="button" class="btn" data-toggle="modal" data-target="#modal-novo-email"><i class="icon-plus-sign"></i> Email</button>
+				</div>
+			</div>
 			<?php //echo $this->Bootstrap->session('Chamada', 'Projeto', 'projeto_id', $belongsTo['Projeto'], null, $sess_controls['Projeto']['id'], $sess_controls['Projeto']['texto']); ?>
 			<?php echo $this->Element('Forms/BSControls/belongsTo', array('field' => 'projeto_id', 'label'=>'Projeto', 'bt_model'=>'Projeto','search'=>false,'url'=>'projetos', 'ini_value'=>$sess_models['Projetos']['id'] ) ); ?>
 			<?php echo $this->Element('Forms/BSControls/belongsTo', array('field' => 'tipo_chamada_id', 'label'=>'Tipo de Chamada', 'bt_model'=>'TiposChamada','search'=>false,'url'=>'tipos_chamadas' ) ); ?>
@@ -251,8 +273,8 @@ $sess_models = AppController::_sess_models();
 		}
 		$('#fld_contato_id').change(function(){
 			atualiza_edita_contato( $(this).val() );
-			//contatos_fones();
-			//contatos_emails();
+			contatos_fones();
+			contatos_emails();
 		});
 		
 		function atualiza_edita_contato(value){
@@ -267,20 +289,24 @@ $sess_models = AppController::_sess_models();
 		});
 
 		function contatos_from(deonde) {
+			contato_id = 0;
 			if ($('#fld_'+deonde+'_id').val() != null) {
 				$.ajax({
-					'dataType':'html',
+					'dataType':'json',
 					'url':'/chamadas/contatos_from/'+deonde+'/'+$('#fld_'+deonde+'_id').val(),
 					'success': function(data) {
-						console.log(data);
-						$('#contatos-table').html(data);
-						//$('#btn-edita-contato').data('idContato', parseInt( data[0]['Contato']['id'] ));
+						var contato = '';
+						$.each(data, function(i, item) {
+							contato+= '<option value="'+item['Contato']['id']+'">'+item['Contato']['nome']+' - '+item['SituacoesContato']['nome']+'</option>';
+							contatos_instituicao[parseInt( item['Contato']['id'] )] = parseInt( item['ContatosInstituicao']['id'] );
+						});
+						$('.opt-contato').html(contato);
+						$('#btn-edita-contato').data('idContato', parseInt( data[0]['Contato']['id'] ));
 						$('#fld_contato_id').change();
 					}
 				});
 			}
 		}
-		
 		$('#bt-addContato').click(function() {
 			$('#fld_contato_instituicao_id').val( $('#fld_instituicao_id').val() );
 			$.ajax({

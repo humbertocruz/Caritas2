@@ -42,11 +42,12 @@ class PedidosController extends AppController {
 		$this->Pedido->contain(array(
 			'Instituicao.InstituicoesEndereco.Cidade.estado_id',
 			'TiposPagamento.nome',
-			'Convenio.data_publicacao',
+			'Convenio',
 			'Distribuidor.nome',
 			'PedidosItem.id',
 			'PedidosItem.Item',
-			'Chamada.id'
+			'Chamada.id',
+			'Edital'
 		));
 		// Dados de relacionamentos
 		$this->set('status', $this->Pedido->Status->find('list', array('fields'=>array('id','nome'))));
@@ -164,6 +165,32 @@ class PedidosController extends AppController {
 		$this->set('belongsTo',$belongsTo);
 
 		$this->_variables('Adiciona Pedido');
+	}
+	
+	public function view($id = null){
+		$this->layout = false;
+		$this->helpers = array('Session','Html','Form','Bootstrap','Caritas');
+		$this->Pedido->Behaviors->attach('Containable');
+		$this->Pedido->contain(
+			array(
+				'Instituicao',
+				'Instituicao.InstituicoesEndereco',
+				'Instituicao.InstituicoesEndereco.Cidade',
+				'PedidosItem',
+				'PedidosItem.Item',
+				'PedidosItem.Item.EtapasAtividadesItem',
+				'PedidosItem.Item.EtapasAtividadesItem.Atividade',
+				'PedidosItem.Item.EtapasAtividadesItem.Etapa',
+				'PedidosItem.Item.EtapasAtividadesItem.PedidosItensEtapasAtividade.pedido_id = '.$id,
+				'Chamada',
+				'Chamada.Assunto',
+				'Chamada.ChamadasFilha',
+				'Chamada.ChamadasProcedimento',
+				'Documento',
+				'Documento.TiposDocumento'
+			)
+		);
+		$this->data = $this->Pedido->read(null, $id);
 	}
 	
 	public function edit($id = null) {

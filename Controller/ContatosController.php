@@ -103,7 +103,7 @@ class ContatosController extends AppController {
 		$this->_variables('Adiciona Contato');
 	}
 	
-	public function edit($id = null, $id_chamada = null) {
+	public function edit($id = null, $ret_controller = null, $ret_action = null, $ret_id = null) {
 		if ($this->request->isPost()):
 			if ($this->data['System']['cancel'] == 1) {
 				$this->Session->setFlash(__('Edição Cancelada!', true), 'bootstrap_flash', array('class'=>'alert'));
@@ -163,7 +163,7 @@ class ContatosController extends AppController {
 		endif;
 	}
 	
-	public function addContatosEmail($id = null) {
+	public function addContatosEmail($id = null, $ret_controller = null, $ret_action = null, $ret_id = null) {
 		if ($this->request->isPost()):
 			if ($this->data['System']['cancel'] == 1) {
 				$this->Session->setFlash(__('Inclusão Cancelada!', true), 'bootstrap_flash', array('class'=>'alert'));
@@ -171,13 +171,25 @@ class ContatosController extends AppController {
 			}			
 			if ($this->ContatosEmail->save($this->data)):
 				$this->Session->setFlash(__('Email do Contato gravado com sucesso!', true), 'bootstrap_flash', array('class'=>'alert-success'));
-				$this->redirect('edit/'.$this->data['ContatosEmail']['contato_id'].'#email');
+				if (isset($this->data['return'])) {
+					$this->redirect($this->data['return']);
+				} else {
+					$this->redirect('edit/'.$this->data['ContatosEmail']['contato_id'].'#email');
+				}
+				
 			else:
 				$this->Session->setFlash(__('Email do Contato não pode ser gravado!', true), 'bootstrap_flash', array('class'=>'alert-error'));
 				$this->set('invalidFields', $this->Contato->invalidFields());
 			endif;
 					
 		endif;
+		if ($ret_controller) {
+			$retorno = array(
+				'controller'=>'/'.$ret_controller.'/'.$ret_action,
+				'id'=>$ret_id
+			);
+			$this->set('retorno',$retorno);
+		}
 		$this->data = $this->Contato->read(null, $id);
 		$source = array('ContatosEmail'=>$this->Contato->ContatosEmail->formFields);	
 		$this->set('source', $source);
@@ -188,7 +200,7 @@ class ContatosController extends AppController {
 		$this->_variables('Adiciona Email','ContatosEmail');
 	}
 	
-	public function editContatosEmail($id) {
+	public function editContatosEmail($id = null, $ret_controller = null, $ret_action = null, $ret_id = null) {
 		if ($this->request->isPost()):
 			if ($this->data['System']['cancel'] == 1) {
 				$this->Session->setFlash(__('Edição Cancelada!', true), 'bootstrap_flash', array('class'=>'alert'));
@@ -197,13 +209,24 @@ class ContatosController extends AppController {
 			
 			if ($this->ContatosEmail->save($this->data)):
 				$this->Session->setFlash(__('Email do Contato gravado com sucesso!', true), 'bootstrap_flash', array('class'=>'alert-success'));
-				$this->redirect('edit/'.$this->data['ContatosEmail']['contato_id'].'#email');
+				if (isset($this->data['return'])) {
+					$this->redirect($this->data['return']);
+				} else {
+					$this->redirect('edit/'.$this->data['ContatosEmail']['contato_id'].'#email');
+				}
 			else:
 				$this->Session->setFlash(__('Email do Contato não pode ser gravado!', true), 'bootstrap_flash', array('class'=>'alert-error'));
 				$this->set('invalidFields', $this->Contato->invalidFields());
 			endif;
 					
 		endif;
+		if ($ret_controller) {
+			$retorno = array(
+				'controller'=>'/'.$ret_controller.'/'.$ret_action,
+				'id'=>$ret_id
+			);
+			$this->set('retorno',$retorno);
+		}
 		$this->data = $this->ContatosEmail->read(null, $id);
 		$source = array('ContatosEmail'=>$this->Contato->ContatosEmail->formFields);	
 		$this->set('source', $source);
@@ -213,14 +236,18 @@ class ContatosController extends AppController {
 		$this->_variables('Edita Email');
 	}
 
-	public function delContatosEmail($id = null) {
+	public function delContatosEmail($id = null, $ret_controller = null, $ret_action = null, $ret_id = null) {
 		$this->layout = null;
-		$this->Contato->ContatosEmail->delete($this->data['ContatosEmail']['id']);
+		$this->Contato->ContatosEmail->delete($id);
 		$this->Session->setFlash(__('Email do Contato excluído com sucesso!', true), 'bootstrap_flash', array('class'=>'alert-success'));
-		$this->redirect('edit/'.$this->data['Contato']['id'].'#email');	
+		if ($ret_controller != null) {
+			$this->redirect('/'.$ret_controller.'/'.$ret_action.'/'.$ret_id);
+		} else {
+			$this->redirect('edit/'.$this->data['Contato']['id'].'#email');	
+		}
 	}
 	
-	public function addContatosFone($id = null) {
+	public function addContatosFone($id = null, $ret_controller = null, $ret_action = null, $ret_id = null) {
 		if ($this->request->isPost()):
 			if ($this->data['System']['cancel'] == 1) {
 				$this->Session->setFlash(__('Inclusão Cancelada!', true), 'bootstrap_flash', array('class'=>'alert'));
@@ -229,13 +256,25 @@ class ContatosController extends AppController {
 			
 			if ($this->ContatosFone->save($this->data)):
 				$this->Session->setFlash(__('Telefone do Contato gravado com sucesso!', true), 'bootstrap_flash', array('class'=>'alert-success'));
-				$this->redirect('edit/'.$this->data['ContatosFone']['contato_id'].'#fone');
+				if (isset($this->data['return'])) {
+					$this->redirect($this->data['return']);
+				} else {
+					$this->redirect('edit/'.$this->data['ContatosFone']['contato_id'].'#fone');
+				}
+				
 			else:
 				$this->Session->setFlash(__('Telefone do Contato não pode ser gravado!', true), 'bootstrap_flash', array('class'=>'alert-error'));
 				$this->set('invalidFields', $this->Contato->invalidFields());
 			endif;
 					
 		endif;
+		if ($ret_controller) {
+			$retorno = array(
+				'controller'=>'/'.$ret_controller.'/'.$ret_action,
+				'id'=>$ret_id
+			);
+			$this->set('retorno',$retorno);
+		}
 		$this->data = $this->Contato->read(null, $id);
 		$source = array('ContatosFone'=>$this->Contato->ContatosFone->formFields);	
 		$this->set('source', $source);
@@ -245,7 +284,7 @@ class ContatosController extends AppController {
 		$this->_variables('Adiciona Telefone');
 	}
 	
-	public function editContatosFone($id = null) {
+	public function editContatosFone($id = null, $ret_controller = null, $ret_action = null, $ret_id = null) {
 		if ($this->request->isPost()):
 			if ($this->data['System']['cancel'] == 1) {
 				$this->Session->setFlash(__('Edição Cancelada!', true), 'bootstrap_flash', array('class'=>'alert'));
@@ -254,13 +293,24 @@ class ContatosController extends AppController {
 			
 			if ($this->ContatosFone->save($this->data)):
 				$this->Session->setFlash(__('Telefone do Contato gravado com sucesso!', true), 'bootstrap_flash', array('class'=>'alert-success'));
-				$this->redirect('edit/'.$this->data['ContatosFone']['contato_id'].'#fone');
+				if (isset($this->data['return'])) {
+					$this->redirect($this->data['return']);
+				} else {
+					$this->redirect('edit/'.$this->data['Contatosfone']['contato_id'].'#fone');
+				}
 			else:
 				$this->Session->setFlash(__('Telefone do Contato não pode ser gravado!', true), 'bootstrap_flash', array('class'=>'alert-error'));
 				$this->set('invalidFields', $this->Contato->invalidFields());
 			endif;
 					
 		endif;
+		if ($ret_controller) {
+			$retorno = array(
+				'controller'=>'/'.$ret_controller.'/'.$ret_action,
+				'id'=>$ret_id
+			);
+			$this->set('retorno',$retorno);
+		}
 		$this->data = $this->ContatosFone->read(null, $id);
 		$source = array('ContatosFone'=>$this->Contato->ContatosFone->formFields);	
 		$this->set('source', $source);
@@ -270,11 +320,15 @@ class ContatosController extends AppController {
 		$this->_variables('Edita Telefone');
 	}
 	
-	public function delContatosFone($id = null) {
+	public function delContatosFone($id = null, $ret_controller = null, $ret_action = null, $ret_id = null) {
 		$this->layout = null;
-		$this->Contato->ContatosFone->delete($this->data['ContatosFone']['id']);
+		$this->Contato->ContatosFone->delete($id);
 		$this->Session->setFlash(__('Telefone do Contato excluído com sucesso!', true), 'bootstrap_flash', array('class'=>'alert-success'));
-		$this->redirect('edit/'.$this->data['Contato']['id'].'#fone');	
+		if ($ret_controller != null) {
+			$this->redirect('/'.$ret_controller.'/'.$ret_action.'/'.$ret_id);
+		} else {
+			$this->redirect('edit/'.$this->data['Contato']['id'].'#fone');	
+		}
 	}
 
 	public function addContatosEndereco($id = null) {

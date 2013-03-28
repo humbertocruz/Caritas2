@@ -5,7 +5,16 @@ class BootstrapHelper extends AppHelper {
 
 	public function br($data) {
 		$date = date_create_from_format('Y-m-d H:i:s', $data);
-		return $date->format('d/m/Y H:i:s');
+		return date_format($date, 'd/m/Y H:i:s');
+	}
+	
+	public function brdate($data) {
+		$date = date_create_from_format('Y-m-d H:i:s', $data);
+		if ($date == false) {
+		return '--- x ---';
+		} else {
+		return date_format($date, 'd/m/Y');
+		}
 	}
 	
 	public function delPost($params = array()) {

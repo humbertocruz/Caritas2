@@ -8,7 +8,7 @@ class ChamadasController extends AppController {
 	
 	var $helpers = array('Bootstrap');
 	// Garante o correto carregamento da Model
-	var $uses = array( 'Chamada','ContatosInstituicao','ContatosFornecedor','Contato');
+	var $uses = array( 'Chamada','ContatosInstituicao','ContatosFornecedor','Contato','Pedido');
 	
 	public function beforeFilter() {
 		$this->Auth->allow('contatos_from','carrega_chamadas','contatos_fones','contatos_emails');
@@ -29,6 +29,20 @@ class ChamadasController extends AppController {
 		$this->set('subs', $subs);
 	}
 	
+	public function carrega_chamadas($deonde = 'instituicao', $instituicao_id = null, $first = 'follow') {
+		if ($first == 'follow') $this->layout = false;
+		$this->recursive = 1;
+		$conditions = array(
+			'Chamada.instituicao_id' => $instituicao_id,
+			'Chamada.chamada_id' => null 
+		);
+		$order = array(
+			'Chamada.data_inicio' => 'DESC'
+		);
+		$chamadas = $this->Chamada->find('all', array('conditions'=>$conditions, 'order'=>$order, 'limit'=>10, 'fields'=>array('Chamada.id','Chamada.data_inicio','Chamada.solicitacao','Chamada.contato_id','Contato.nome','Atendente.nome')));
+		$this->set('chamadas',$chamadas);
+	}
+	
 	public function _save(){
 		$dados_chamada = $this->data;
 		if ($dados_chamada['System']['finalizando'] == 1) {
@@ -39,7 +53,11 @@ class ChamadasController extends AppController {
 		}
 		if ($this->Chamada->save($dados_chamada)):
 			$this->Session->setFlash(__('Chamada gravada com sucesso!', true), 'bootstrap_flash', array('class'=>'alert-success'));
-			if (!isset($this->data['continue']) || $this->data['continue'] == 0): $this->redirect('index'); else: $this->redirect('edit/'.$this->Chamada->id); endif;
+			if (!isset($this->data['continue']) || $this->data['continue'] == 0) {
+				$this->redirect('index'); 
+			} else {
+				$this->redirect('edit/'.$this->Chamada->id); 
+			}
 		else:
 			$this->Session->setFlash(__('Chamada não pode ser gravada!', true), 'bootstrap_flash', array('class'=>'alert-error'));
 			$this->set('invalidFields', $this->Chamada->invalidFields());
@@ -170,14 +188,25 @@ class ChamadasController extends AppController {
 		$this->set('pedido_id', $pedido_id);
 	}
 	
-	public function contatos_from($deonde, $id, $contato_id = 0) {
-		$this->layout = 'ajax';
+	public function contatos_from($deonde, $id, $contato_id = 0, $chamada_id = 0) {
+		$this->layout = null;
+		$this->ContatosInstituicao->Behaviors->attach('Containable');
+
+		$this->ContatosInstituicao->contain(
+			array(
+				'Contato',
+				'Cargo',
+				'Instituicao',
+				'Contato.ContatosEmail',
+				'Contato.ContatosFone'
+		) );
 		if ($deonde == 'instituicao') {
-			$this->set('contatos', json_encode( $this->ContatosInstituicao->find('all', array('conditions'=>array('ContatosInstituicao.instituicao_id'=>$id)))) );
+			$this->set('contatos', $this->ContatosInstituicao->find('all', array('conditions'=>array('ContatosInstituicao.instituicao_id'=>$id))) );
 		} else {
-			$this->set('contatos', json_encode( $this->ContatosFornecedor->find('all', array('conditions'=>array('ContatosFornecedor.fornecedor_id'=>$id)))) );
+			$this->set('contatos', $this->ContatosFornecedor->find('all', array('conditions'=>array('ContatosFornecedor.fornecedor_id'=>$id))) );
 		}
 		$this->set('contato_id', $contato_id);
+		$this->set('chamada_id', $chamada_id);
 	}
 	public function contatos_fones($contato_id = 0) {
 		$this->layout = 'ajax';
@@ -205,7 +234,7 @@ class ChamadasController extends AppController {
 		$sess_models = AppController::_sess_models();
 		if ($sess_models['Projetos']['id'] == 0) {
 				$this->Session->setFlash(__('Necessário selecionar o Projeto!', true), 'bootstrap_flash', array('class'=>'alert-error'));
-				$this->redirect('/Pedidos');			
+				$this->redirect('/chamadas');			
 		}
 		
 		$this->set('sess_controls', array('Projeto' => array('id'=>$sess_models['Projetos']['id'],'texto'=>$sess_models['Projetos']['texto'])));
@@ -238,6 +267,34 @@ class ChamadasController extends AppController {
 			
 			
 			AppController::_sess_models_write('Chamadas', $chamada_id, $texto);
+		} else if ( $pedido_id != 0 ) {
+			$this->Pedido->Behaviors->attach('Containable');
+			$this->Pedido->contain('Instituicao','Instituicao.InstituicoesEndereco','Instituicao.InstituicoesEndereco.Cidade');
+			$pedido_filho = $this->Pedido->read(null, $pedido_id);
+			$instituicao = $pedido_filho['Instituicao'];
+						
+			$this->set('sessCidade', $this->Pedido->Instituicao->InstituicoesEndereco->Cidade->read(null, $pedido_filho['Instituicao']['InstituicoesEndereco'][0]['cidade_id']));
+			
+			$chamada_filha = array(
+				'Instituicao' => $instituicao
+			);
+						
+			$this->data = $chamada_filha;
+ 			$this->set('instituicao_pedido',$instituicao['nome_fantasia'].' / '.$instituicao['InstituicoesEndereco'][0]['Cidade']['estado_id']);
+			
+			//AppController::_sess_models_write('Chamadas', $chamada_id, $texto);
+			
+			$this->recursive = 1;
+			$conditions_cf = array(
+				'Chamada.instituicao_id' => $instituicao['id'],
+				'Chamada.chamada_id' => null 
+				);
+			$order_cf = array(
+				'Chamada.data_inicio' => 'DESC'
+				);
+			$chamadas_cf = $this->Chamada->find('all', array('conditions'=>$conditions_cf, 'order'=>$order_cf, 'limit'=>10, 'fields'=>array('Chamada.id','Chamada.data_inicio','Chamada.solicitacao','Chamada.contato_id','Contato.nome','Atendente.nome')));
+			$this->set('chamadas_hist',$chamadas_cf);
+		
 		} else {
 			AppController::_sess_models_write('Chamadas', 0, 'Nenhuma');
 		}
@@ -265,20 +322,6 @@ class ChamadasController extends AppController {
 		$this->_variables('Adiciona Chamada');
 	}
 	
-	function carrega_chamadas($deonde = 'instituicao', $instituicao_id = null) {
-		$this->layout = null;
-		$this->recursive = 1;
-		$conditions = array(
-			'Chamada.instituicao_id' => $instituicao_id,
-			'Chamada.chamada_id' => null 
-		);
-		$order = array(
-			'Chamada.data_inicio' => 'DESC'
-		);
-		$chamadas = $this->Chamada->find('all', array('conditions'=>$conditions, 'order'=>$order, 'limit'=>10, 'fields'=>array('Chamada.id','Chamada.data_inicio','Chamada.solicitacao','Chamada.contato_id','Contato.nome','Atendente.nome')));
-		$this->set('chamadas',$chamadas);
-	}
-	
 	public function edit($id = null, $pedido_id = 0) {
 		if ($this->request->isPost()):
 			if ($this->data['System']['cancel'] == 1) {
@@ -296,7 +339,7 @@ class ChamadasController extends AppController {
 		$sess_models = AppController::_sess_models();
 		if ($sess_models['Projetos']['id'] == 0) {
 				$this->Session->setFlash(__('Necessário selecionar o Projeto!', true), 'bootstrap_flash', array('class'=>'alert-error'));
-				$this->redirect('/Pedidos');			
+				$this->redirect('/chamadas');			
 		}
 		
 		$this->set('sess_controls', array('Projeto' => array('id'=>$sess_models['Projetos']['id'],'texto'=>$sess_models['Projetos']['texto'])));
@@ -336,11 +379,30 @@ class ChamadasController extends AppController {
 			$this->set('hasMany', $hasMany);
 			
 			$filter_data = array(
-				'Estado'=>$this->Chamada->Instituicao->InstituicoesEndereco->Cidade->Estado->find('all'),
-				'Cidade'=>array('Cidade'=>array())
+				'Estado'=>$this->Chamada->Instituicao->InstituicoesEndereco->Cidade->Estado->find( 'all' ),
+				'Cidade'=>array( 'Cidade'=>array() )
 			);
 			$this->set('filter_data', $filter_data);
 			$this->_variables('Edita Chamada');
+			$this->carrega_chamadas( 'instituicao', $this->data['Chamada']['instituicao_id'], 'first' );
+			
+			$this->ContatosInstituicao->Behaviors->attach('Containable');
+
+			$this->ContatosInstituicao->contain(
+			array(
+				'Contato',
+				'Cargo',
+				'Instituicao',
+				'Contato.ContatosEmail',
+				'Contato.ContatosFone'
+			) );
+
+			$contatos = $this->ContatosInstituicao->find( 'all', array( 'conditions'=>array( 'ContatosInstituicao.instituicao_id'=>$this->data['Chamada']['instituicao_id'] ) ) );
+			
+			$this->set( 'contatos', $contatos );
+
+			$this->render( 'form' );
+			
 		endif;
 	}
 	

@@ -13,8 +13,8 @@
 	<?php foreach($this->data['Documento'] as $row) { ?>
 	<tr>
 		<td><?php echo $row['nome_arquivo'];?></td>
-		<td><?php echo $this->Bootstrap->br( $row['data_documento'] );?></td>
-		<td><?php echo $this->Bootstrap->br( $row['data_cadastro'] );?></td>
+		<td><?php echo $this->Bootstrap->brdate( $row['data_documento'] );?></td>
+		<td><?php echo $this->Bootstrap->brdate( $row['data_cadastro'] );?></td>
 		<td><?php echo $row['observacao'];?></td>
 		<td><?php echo $row['TiposDocumento']['nome'];?></td>
 		<td>

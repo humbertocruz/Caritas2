@@ -4,6 +4,9 @@
 	<input type="hidden" name="data[System][controller]" value="<?php echo $this->name; ?>">
 	<input type="hidden" name="data[System][id_chamada]" value="<?php echo (isset($id_chamada))?($id_chamada):('0'); ?>">
 	<input type="hidden" name="data[<?php echo $model;?>][id]" value="<?php echo (isset($this->data[$model]['id']) ? $this->data[$model]['id'] : ''); ?>">
+	<?php if (isset($retorno)) { ?>
+		<input type="hidden" name="data[return]" value="<?php echo $retorno['controller'].'/'.$retorno['id'];?>">
+	<?php } ?>
 	<fieldset>
 		<?php foreach($fields as $field) {
 			if ($field['type'] == 'none' or $field['type'] == 'source_none' or $field['type'] == 'habtm') continue;

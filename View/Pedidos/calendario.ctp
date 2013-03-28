@@ -45,7 +45,7 @@
 	?>
 	<?php if ($prazo['EtapasAtividadesItem']['Etapa']['nome'] != $etapa) { $etapa = $prazo['EtapasAtividadesItem']['Etapa']['nome'];?>
 	<tr>
-		<th colspan="7"><h3><?php echo $etapa; ?></h3></th>
+		<th colspan="8"><h3><?php echo $etapa; ?></h3></th>
 	</tr>
 	<?php } ?>
 	<tr>

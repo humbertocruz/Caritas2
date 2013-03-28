@@ -24,32 +24,7 @@
 			</div>
 			<?php echo $this->Element('Forms/BSControls/instituicaoSessUFCidade'); ?>
 			<?php echo $this->Element('Forms/BSControls/fornecedorSessUFCidade'); ?>
-			<?php // Campo especial para Contato da Chamada ?>
-			<div class="control-group alert" id="ctrl-contato_id">
-				<label class="control-label" for="fld_contato_id">Contato</label>
-				<div class="controls">
-					<select class="span4 opt-contato" id="fld_contato_id" name="data[Chamada][contato_id]">
-						<optgroup label="Seleciossne a Instituição / Fornecedor"></optgroup>
-					</select>
-					<div class="clearfix">
-						<table>
-							<tr>
-								<td>Cargo</td>
-								<td>Status</td>
-								<td>Telefone</td>
-								<td>Email</td>
-							</tr>
-						</table>
-						<textarea onclick="$(this).select();" rows="4" readonly="readonly" class="span4" id="fld_contato_fones"></textarea>
-						<textarea onclick="$(this).select();" rows="4" readonly="readonly" class="span4" id="fld_contato_emails"></textarea>
-					</div>
-					<br>
-					<button type="button" id="btn-edita-contato" data-id-chamada="<?php echo $this->data['Chamada']['id']; ?>" class="btn"><i class="icon-pencil"></i> Editar Contato</button>
-					<button type="button" class="btn" data-toggle="modal" data-target="#modal-novo-contato"><i class="icon-plus-sign"></i> Contato</button>
-					<button type="button" class="btn" data-toggle="modal" data-target="#modal-novo-telefone"><i class="icon-plus-sign"></i> Telefone</button>
-					<button type="button" class="btn" data-toggle="modal" data-target="#modal-novo-email"><i class="icon-plus-sign"></i> Email</button>
-				</div>
-			</div>
+			<?php echo $this->Element('Chamadas/tabContato'); ?>
 			<?php //echo $this->Bootstrap->session('Pedido', 'Projeto', 'projeto_id', $belongsTo['Projeto'], null, $sess_controls['Projeto']['id'], $sess_controls['Projeto']['texto']); ?>
 			<?php echo $this->Element('Forms/BSControls/belongsTo', array('field' => 'projeto_id', 'label'=>'Projeto', 'bt_model'=>'Projeto','search'=>false,'url'=>'projetos' ) ); ?>
 			<?php echo $this->Element('Forms/BSControls/belongsTo', array('field' => 'tipo_chamada_id', 'label'=>'Tipo de Chamada', 'bt_model'=>'TiposChamada','search'=>false,'url'=>'tipos_chamadas' ) ); ?>
@@ -75,6 +50,15 @@
 						</tr>
 					</thead>
 					<tbody class="chamadas_table">
+					<?php
+						foreach($chamadas as $chamada) { ?>
+						<tr>
+							<td class="span2"><?php echo date('d/m/Y H:i', strtotime( $chamada['Chamada']['data_inicio'] ) );?></td>
+							<td><?php echo $chamada['Contato']['nome'];?></td>
+							<td><?php echo $chamada['Chamada']['solicitacao'];?></td>
+							<td><?php echo $chamada['Atendente']['nome'];?>a</td>
+						</tr>
+					<?php } ?>
 					</tbody>
 				</table>
 			</div>
@@ -94,7 +78,6 @@
 </form>
 <script>
 	$(document).ready(function(){
-		console.log('ini');
 		$('#bt-save-end').click(function(){
 			$('#fld_status_id').val(3);
 			$('#fld_finalizando').val(1);

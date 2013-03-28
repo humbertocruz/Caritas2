@@ -354,7 +354,7 @@ class AppController extends Controller {
 			}
 		}
 		$conditions = array(
-			'Chamada.data_fim'=>'0000-00-00',
+			'Chamada.status_id'=>'1',
 			'Chamada.atendente_id'=>$this->Session->read('Auth.User.Atendente.id')
 		);
 		$chamadas_aberto = $this->Chamada->find('count', array('conditions'=>$conditions));
