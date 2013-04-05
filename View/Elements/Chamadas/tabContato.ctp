@@ -1,16 +1,14 @@
-<div class="accordion" id="accordion-contatos">
-	<div class="accordion-group">
-		<div class="accordion-heading">
-			<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-contatos" href="#collapseOne">
-				<h4>Contatos</h4>
-			</a>
-		</div>
-		<div class="accordion-body collapse" id="collapseOne">
-			<div class="accordion-inner" id="contatos-table">
+<div id="list-contatos">
+
+<select name="data[Chamada][contato_id]" id="contato-select" class="span6">
+<?php foreach ($contatos as $contato) { ?>
+	<option value="<?php echo $contato['Contato']['id'];?>"><?php echo $contato['Contato']['nome'].' - '.$contato['Cargo']['nome'];?></option>
+<?php } ?>
+</select>
 				<?php
 				if (isset($contatos)) { 
 				foreach ($contatos as $contato) { ?>
-				<table class="table table-bordered">
+				<table class="table table-bordered hide contato-table" id="contato-table-<?php echo $contato['Contato']['id'];?>">
 				<tr>
 					<th class="span1 alert-info">Nome</th>
 				    <td class="alert-info"><?php echo $contato['Contato']['nome']; ?></td>
@@ -62,8 +60,5 @@
 				    </tr>
 				</table>
 				<?php } } ?>
-			</div>
-		</div>
-	</div>
 </div>
 

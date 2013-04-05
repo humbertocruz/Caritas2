@@ -1,6 +1,12 @@
+<select name="data[Chamada][contato_id]" class="span6" id="contato-select">
+<?php foreach ($contatos as $contato) { ?>
+	<option value="<?php echo $contato['Contato']['id'];?>"><?php echo $contato['Contato']['nome'].' - '.$contato['Cargo']['nome'];?></option>
+<?php } ?>
+</select>
+
 <?php
 foreach ($contatos as $contato) { ?>
-				<table class="table table-bordered">
+				<table class="table table-bordered hide contato-table" id="contato-table-<?php echo $contato['Contato']['id'];?>">
 				<tr>
 					<th class="span1 alert-info">Nome</th>
 				    <td class="alert-info"><?php echo $contato['Contato']['nome']; ?></td>

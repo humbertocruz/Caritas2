@@ -53,7 +53,7 @@ $sess_models = AppController::_sess_models();
 		<?php } else { ?>
 		<ul class="nav pull-right">
 			<li class="dropdown">
-				<a class="dropdown-toggle" data-toggle="dropdown" href="#"><?php echo( $this->Session->read('Auth.User.Atendente.nome'));?><b class="caret"></b></a>
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#"><?php echo( $this->Session->read('Auth.User.Atendente.nome'));?> [ <span id="user_timeout">20:00</span> ]<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li><a href="#" data-toggle="modal" data-target="#changePass">Alterar Senha</a></li>
 					<li><a href="/atendentes/edit/<?php echo $this->Session->read('Auth.User.Atendente.id');?>">Seu Cadastro</a></li>

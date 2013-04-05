@@ -21,6 +21,7 @@
 		<?php echo $this->Html->script('http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js'); ?>
 		<?php echo $this->Html->script('../bootstrap/js/bootstrap'); ?>
 		<?php echo $this->Html->script('../datepicker/js/bootstrap-datepicker'); ?>
+		<?php echo $this->Html->script('caritas'); ?>
 		<script >
 			$(document).ready(function(){
 				$('[rel=tooltip]').tooltip();
