@@ -232,8 +232,7 @@
 
 <script>
 	$(document).ready(function(){
-		var contatos_instituicao = new Array();
-				
+
 		$('.btns').button();
 		$('.btI').click(function(){
 			$('.opt-fornecedor').addClass('hide');
@@ -254,8 +253,18 @@
 		});
 		$('#fld_fornecedor_id').change(function(){
 			contatos_from('fornecedor');
+			chamadas_from('fornecedor');
 		});
-			
+		function chamadas_from(deonde) {
+			if ($('#fld_'+deonde+'_id').val() != null) {
+				$.ajax({
+					'url':'/chamadas/carrega_chamadas/'+deonde+'/'+$('#fld_'+deonde+'_id').val(),
+					'success': function(data) {
+						$('.chamadas_table').html(data);
+					}
+				});
+			}
+		}
 
 		function contatos_from(deonde) {
 			contato_id = <?php echo $this->data['Chamada']['contato_id']; ?>;
@@ -281,10 +290,11 @@
 			$('#contato-table-'+contato_id).show();
 		}
 
-		$('#contato-select').change( function() {
-			console.log('ok');
+		$('#contato-select').live('change', function() {
 			contato_show_table(); 
 		} );
+		
+		contato_show_table();
 	
 	});
 </script>

@@ -216,7 +216,7 @@ $sess_models = AppController::_sess_models();
 <script>
 	$(document).ready(function(){
 		var contatos_instituicao = new Array();
-		
+				
 		$('.btns').button();
 		$('.btI').click(function(){
 			$('.opt-fornecedor').addClass('hide');
@@ -237,6 +237,7 @@ $sess_models = AppController::_sess_models();
 		});
 		$('#fld_fornecedor_id').change(function(){
 			contatos_from('fornecedor');
+			chamadas_from('fornecedor');
 		});
 		function chamadas_from(deonde) {
 			if ($('#fld_'+deonde+'_id').val() != null) {
@@ -244,105 +245,40 @@ $sess_models = AppController::_sess_models();
 					'url':'/chamadas/carrega_chamadas/'+deonde+'/'+$('#fld_'+deonde+'_id').val(),
 					'success': function(data) {
 						$('.chamadas_table').html(data);
-						$('#fld_contato_id').change();
 					}
 				});
 			}
 		}
-		$('#fld_contato_id').change(function(){
-			atualiza_edita_contato( $(this).val() );
-			//contatos_fones();
-			//contatos_emails();
-		});
-		
-		function atualiza_edita_contato(value){
-			$('#btn-edita-contato').data('idContatoInstituicao', value);
-		}
-		
-		$('#btn-edita-contato').click(function(){
-			//location.href = 'system/belongsTo/'. encodeURI( 'contatos/edit/'+$(this).data('idContato')+'/'+$(this).data('idChamada') );
-			$('form#form_Chamada').attr('action','/systems/belongsTo/form_data' );
-			$('form#form_Chamada').prepend('<input type="hidden" name="data[form_data]" value="/contatos/edit/'+$(this).data('idContatoInstituicao')+'/'+$(this).data('idChamada')+'">');
-			$('form#form_Chamada').submit();
-		});
 
 		function contatos_from(deonde) {
+			contato_id = 0;
 			if ($('#fld_'+deonde+'_id').val() != null) {
 				$.ajax({
 					'dataType':'html',
 					'url':'/chamadas/contatos_from/'+deonde+'/'+$('#fld_'+deonde+'_id').val(),
 					'success': function(data) {
-						console.log(data);
-						$('#contatos-table').html(data);
-						//$('#btn-edita-contato').data('idContato', parseInt( data[0]['Contato']['id'] ));
-						$('#fld_contato_id').change();
+						$('#list-contatos').html(data);
+						contato_show_table();
 					}
 				});
 			}
 		}
-		
-		$('#bt-addContato').click(function() {
-			$('#fld_contato_instituicao_id').val( $('#fld_instituicao_id').val() );
-			$.ajax({
-				'url':'/chamadas/addContatoChamada',
-				'data':$('#frm-addContato').serialize(),
-				'type':'POST',
-				'success': function(data){
-					$('#modal-novo-contato').modal('hide');
-					$('#fld_instituicao_id').change();
-				}
-			});
-		});
-		$('#bt-addContatoFone').click(function() {
-			$('#fld_addFone_contato_id').val( $('#fld_contato_id').val() );
-			$.ajax({
-				'url':'/chamadas/addContatoFone',
-				'data':$('#frm-addContatoFone').serialize(),
-				'type':'POST',
-				'success': function(data){
-					$('#modal-novo-telefone').modal('hide');
-					$('#fld_contato_id').change();
-				}
-			});
-		});
-		$('#bt-addContatoEmail').click(function() {
-			$('#fld_addEmail_contato_id').val( $('#fld_contato_id').val() );
-			$.ajax({
-				'url':'/chamadas/addContatoEmail',
-				'data':$('#frm-addContatoEmail').serialize(),
-				'type':'POST',
-				'success': function(data){
-					$('#modal-novo-email').modal('hide');
-					$('#fld_contato_id').change();
-				}
-			});
+		$('#ChamadasTab a').click(function (e) {
+			e.preventDefault();
+			$(this).tab('show');
 		});
 
-		function contatos_fones() {
-			$.ajax({
-				'dataType':'json',
-				'url':'/chamadas/contatos_fones/'+$('#fld_contato_id').val(),
-				'success': function(data) {
-					var fones = '';
-					$.each(data, function(i, item) {
-						fones+= item['ContatosFone']['fone']+' - '+item['TiposFone']['nome']+'\n';
-					});
-					$('#fld_contato_fones').val(fones);
-				}
-			});
+		function contato_show_table() {
+			$('.contato-table').hide();
+			contato_id = $('#contato-select').val();
+			$('#contato-table-'+contato_id).show();
 		}
-		function contatos_emails() {
-			$.ajax({
-				'dataType':'json',
-				'url':'/chamadas/contatos_emails/'+$('#fld_contato_id').val(),
-				'success': function(data) {
-					var emails = '';
-					$.each(data, function(i, item) {
-						emails+= item['ContatosEmail']['email']+'\n';
-					});
-					$('#fld_contato_emails').val(emails);
-				}
-			});
-		}
+
+		$('#contato-select').live('change', function() {
+			contato_show_table(); 
+		} );
+		
+		contato_show_table();
+	
 	});
 </script>

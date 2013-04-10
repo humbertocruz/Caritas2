@@ -320,6 +320,7 @@ class ChamadasController extends AppController {
 		$this->set('filter_data', $filter_data);
 
 		$this->_variables('Adiciona Chamada');
+		
 	}
 	
 	public function edit($id = null, $pedido_id = 0) {
