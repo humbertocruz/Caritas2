@@ -1,4 +1,4 @@
 Config/core.php
 Config/database.php
 tmp/*
-webroot/backps_dir/*
+"*.gz"
