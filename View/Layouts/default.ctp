@@ -22,6 +22,9 @@
 		<?php echo $this->Html->script('../bootstrap/js/bootstrap'); ?>
 		<?php echo $this->Html->script('../datepicker/js/bootstrap-datepicker'); ?>
 		<?php echo $this->Html->script('caritas'); ?>
+		<?php echo $this->Html->script('save_restore'); ?>
+		<?php echo $this->Html->script('jquery.deserialize'); ?>
+		
 		<script >
 			$(document).ready(function(){
 				$('[rel=tooltip]').tooltip();
@@ -102,13 +105,7 @@
 			</div>
 		</div>
 		<footer>
-			<div class="navbar navbar-fixed-bottom">
-				<div class="navbar-inner">
-					<div class="container">
-						<a href="#" class="brand">Rodapé</a>
-					</div>
-				</div>
-			</div>
+			<?php echo $this->Element('navbar_bot'); ?>
 		</footer>
 		<?php echo $this->element('sql_dump'); ?>
 	</body>

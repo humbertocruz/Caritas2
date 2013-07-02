@@ -62,6 +62,7 @@ class AppController extends Controller {
 		'sis_modulos' => array(
 			'name' => 'Módulos',
 			'data' => array(
+				'Chamados' => array('Chamados', '/chamados'),
 				'Chamadas' => array('Chamadas', '/chamadas'),
 				'Projetos' => array('Projetos', '/projetos'),
 				'Contatos' => array('Contatos', '/contatos'),
@@ -105,7 +106,11 @@ class AppController extends Controller {
 	
 	public $uses = array('Projeto','Chamada');
 	
-	public $helper = array('Bootstrap','Caritas');
+	public $helpers = array('Html', 'Form', 
+		"TB" => array(
+        "className" => "TwitterBootstrap.TwitterBootstrap"
+        ),
+    	'Caritas');
 	
 	public function _sub_children($itens, $vars) {
 		$contador = 0;
@@ -292,6 +297,12 @@ class AppController extends Controller {
 		$this->Session->delete('do_belongsTo');
 		$this->Session->delete('load_belongsTo');
 		*/
+		
+		if ( $this->Session->check('sr_forms') ) {
+			$this->set( 'sr_forms', $this->Session->read( 'sr_forms' ) );
+		} else {
+			$this->set( 'sr_forms', array() );
+		}
 
 		// Controle de Acessos BelongsTo
 		
@@ -353,13 +364,19 @@ class AppController extends Controller {
 				$this->set('ret_belongsTo', array($ret_belongsTo[0]=>$ret_belongsTo));
 			}
 		}
-		$conditions = array(
+		/*$conditions_a = array(
 			'Chamada.status_id'=>'1',
 			'Chamada.atendente_id'=>$this->Session->read('Auth.User.Atendente.id')
 		);
-		$chamadas_aberto = $this->Chamada->find('count', array('conditions'=>$conditions));
+		$conditions_o = array(
+			'Chamado.status_id'=>'1',
+			'Chamado.atendente_id'=>$this->Session->read('Auth.User.Atendente.id')
+		);
+		$chamadas_aberto = $this->Chamada->find('count', array('conditions'=>$conditions_a));
+		$chamados_aberto = $this->Chamado->find('count', array('conditions'=>$conditions_o));
 		
 		$this->set('chamadas_aberto', $chamadas_aberto);
+		*/
 	}
 		
 }

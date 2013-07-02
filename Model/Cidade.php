@@ -71,5 +71,12 @@ class Cidade extends AppModel {
 			'order' => ''
 		)
 	);
+	
+	public $hasMany = array(
+		'InstituicoesEndereco' => array(
+			'className' => 'InstituicoesEndereco',
+			'foreignKey' => 'cidade_id'
+		)
+	);
 
 }

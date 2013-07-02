@@ -125,4 +125,22 @@ class SystemsController extends AppController {
 		$this->set('search_cidade',$cidade);
 	}
 	
+	public function guardaForm($form_id = null) {
+		$this->layout = null;
+		$json = $this->request->data['json'];
+		$this->Session->write('sr_forms.form_'.$form_id, array('key'=>$form_id,'url'=>$this->request->referer(),'json'=>$json));
+	}
+	
+	public function restauraForm($form_id = null) {
+		$this->layout = null;
+		$form = $this->Session->read('sr_forms.form_'.$form_id);
+		echo $form['json'];
+		$this->render(null);
+	}
+	
+	public function excluiForm($form_id = null) {
+		$this->layout = null;
+		$this->Session->delete( 'sr_forms.form_'.$form_id );
+	}
+	
 }

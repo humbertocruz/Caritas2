@@ -4,7 +4,6 @@ if(!isset($sessLoad)) $sessLoad = true;
 if (!isset($ini_value)) $ini_value = 0;
 
 if ($bt_model == $source_model) { 
-pr($belongsTo);
 ?>
 <input type="hidden" name="data[<?php echo $model;?>][<?php echo strtolower($source_model); ?>_id]" value="<?php echo $this->data[$source_model]['id'];?>">
 <?php } else { ?>

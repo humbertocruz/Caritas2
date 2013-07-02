@@ -18,6 +18,121 @@ $(document).ready(function(){
 			location.href = '/atendentes/logout';
 		}
 		
-	}	
-	
-});
+		$('#btn-forms-save-restore').click(function(){
+			$('.form-save-restore').toggle();
+		});
+		
+		$('.btn-form-save').click(function(){
+			form_save($(this).parent().parent());
+			return false;
+		});
+		$('.btn-form-restore').click(function(){
+			form_restore($(this).parent().parent());
+			return false;
+		});
+	}
+		$( '.sr-form-bt' ).live('click', function() {
+			/*
+			form = $(this).parents('form');
+			data = form.serializeArray();
+			data = JSON.stringify(data);
+			url = $(this).data('url');
+			console.log(url);
+			$.ajax({
+			'type': 'post',
+			'url': '/systems/guardaForm/'+form.attr('id'),
+			'data': {'json':data},
+			'success': function(data) {
+				location.href = '/'+url;
+			}
+			});
+			*/
+			form = $(this).parents('form');
+			url = $(this).data('url');
+			$('#modal-saving-form').modal('show');
+			form_save(form.attr('id'), url);
+		});
+});			
+function create_options(data, key, value) {
+	options = '<option value="0">Escolha uma opção</option>';
+	jQuery.each(data, function(option) {
+		options+= '<option value="'+eval( 'data[option]'+key )+'">'+eval( 'data[option]'+value )+'</option>';
+	});
+	return options;
+}
+
+function create_instituicoes(data) {
+	institu = new Array();
+	jQuery.each(data, function(option) {
+		institu[data[option]['Cidade']['id']] = data[option]['InstituicoesEndereco'];
+	});
+	return institu;
+}
+
+function form_save(form, url) {
+		form = $('#'+form);
+		data = form.serializeArray();
+		data = JSON.stringify(data);
+		$.ajax({
+			'type': 'post',
+			'url': '/systems/guardaForm/'+form.attr('id'),
+			'data': {'json':data},
+			'success': function(data) {
+				$('#modal-saving-form').modal('hide');
+				if (typeof url !== 'undefined') {
+					location.href = url;
+				}
+			}
+		});
+}
+
+function form_del(form) {
+	form = $('#'+form);
+	$.ajax({
+			'dataType':'json',
+			'type': 'get',
+			'url': '/systems/excluiForm/'+form.attr('id'),
+			'success': function(data) {
+				location.reload();
+			}
+		});
+}
+
+function form_restore(form) {
+		form = $('#'+form);
+		$.ajax({
+			'dataType':'json',
+			'type': 'get',
+			'url': '/systems/restauraForm/'+form.attr('id'),
+			'success': function(data) {
+				allData = data;
+				if ($('#instituicao_id_row').length > 0 ) {
+
+					estado = data[5]['value'];
+					cidade = data[6]['value'];
+					instituicao = data[7]['value'];
+					contato = data[8]['value'];
+
+					$.post('/chamados/loadCidades', {'data[estado_id]':estado}, function(data){
+						$('#instituicao_cidade').html(data).removeAttr('disabled');
+						$.post('/chamados/loadInstituicoes', {'data[cidade_id]':cidade}, function(data){
+							$('#instituicao_id').html(data).removeAttr('disabled');
+							$.post('/chamados/loadContatos', {'data[instituicao_id]':instituicao}, function(data){
+								$('#contato_id').html(data).removeAttr('disabled');
+								form.deserialize(allData);
+							});
+							$.post('/chamados/loadContatosDetalhes', {'data[instituicao_id]':instituicao}, function(data){
+								$('#contatos-detalhes').html(data).removeAttr('disabled');
+								$('#contato-table-'+contato).show();
+							});
+							$.post('/chamados/loadHistoricos', {'data[instituicao_id]':instituicao}, function(data){
+								$('#chamados-table').html(data);
+								$('#modal-loading-form').modal('hide');
+							});
+						});
+					});
+					
+				}
+			}
+		});
+}

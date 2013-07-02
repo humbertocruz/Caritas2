@@ -25,7 +25,7 @@ foreach ($contatos as $contato) { ?>
 				    		</a>
 				    		<ul class="dropdown-menu">
 					    		<li><a href="/contatos/editContatosEmail/<?php echo $emails['id'].'/'.$this->name.'/'.$this->action.'/'.$chamada_id;?>">Editar</a></li>
-				    			<li><a href="/contatos/delContatosEmail/<?php echo $fones['id'].'/'.$this->name.'/'.$this->action.'/'.$chamada_id;?>">Excluir</a></li>
+				    			<li><a href="/contatos/delContatosEmail/<?php echo $emails['id'].'/'.$this->name.'/'.$this->action.'/'.$chamada_id;?>">Excluir</a></li>
 				    		</ul>
 				    	</div>
 				    </td>
@@ -51,7 +51,7 @@ foreach ($contatos as $contato) { ?>
 				    <?php } ?>
 				    <tr>
 				    	<td colspan="2">
-				    		<a href="/contatos/addContatosEmail/<?php echo $contato['Contato']['id'].'/'.$this->name.'/'.$this->action.'/0';?>" class="btn">Adicionar Email</a>
+				    		<a href="#" class="btn" id="btn-add-email">Adicionar Email</a>
 				    		<a href="contatos/addContatosFone/<?php echo $contato['Contato']['id'].'/'.$this->name.'/'.$this->action.'/0';?>" class="btn">Adicionar Telefone</a>
 				    		<a href="/contatos/edit/<?php echo $contato['Contato']['id'].'/'.$this->name.'/'.$this->action.'/0'; ?>" class="btn">Editar Contato</a>
 				    	</td>

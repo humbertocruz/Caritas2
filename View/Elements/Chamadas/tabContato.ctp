@@ -53,7 +53,7 @@
 				    <?php } ?>
 				    <tr>
 				    	<td colspan="2">
-				    		<a href="/contatos/addContatosEmail/<?php echo $contato['Contato']['id'].'/'.$this->name.'/'.$this->action.'/'.$this->data['Chamada']['id'];?>" class="btn">Adicionar Email</a>
+				    		<a href="#" class="btn" id="btn-add-email">Adicionar Email</a>
 				    		<a href="contatos/addContatosFone/<?php echo $contato['Contato']['id'].'/'.$this->name.'/'.$this->action.'/'.$this->data['Chamada']['id'];?>" class="btn">Adicionar Telefone</a>
 				    		<a href="/contatos/edit/<?php echo $contato['Contato']['id'].'/'.$this->name.'/'.$this->action.'/'.$this->data['Chamada']['id']; ?>" class="btn">Editar Contato</a>
 				    	</td>
@@ -61,4 +61,29 @@
 				</table>
 				<?php } } ?>
 </div>
+
+<div class="modal hide fade" id="modal-add-email">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Modal header</h3>
+  </div>
+  <div class="modal-body">
+    <p>One fine body…</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn">Close</a>
+    <a href="#" class="btn btn-primary">Save changes</a>
+  </div>
+</div>
+
+<script>
+	$(document).ready(function(){
+		$('#btn-add-email').live(
+			'click',
+			function(){
+				$('#modal-add-email').modal('show');
+			}
+		);
+	});
+</script>
 
